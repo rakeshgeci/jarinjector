@@ -1,2 +1,4 @@
-# Jar Injector
-----------------
+* Jar Injector
+
+
+Can be used to inject class files to jar in a remote linux machine using ssh
