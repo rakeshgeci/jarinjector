@@ -131,7 +131,7 @@ public class JarInjectorClassLoader {
 
 	private void copyJarToTemp() {
 		try {
-			sshLogin.executeCommand("cd /");
+			System.out.println(sshLogin.executeCommand("date"));
 			System.out.println(sshLogin.executeCommand("ls"));
 		} catch (IOException | JSchException e) {
 			// TODO Auto-generated catch block
@@ -159,6 +159,7 @@ public class JarInjectorClassLoader {
 				outputClass = cp.parse();
 				String packageName = outputClass.getPackageName();
 				outputFilePath = "/"+packageName.replaceAll("\\.", "/")+"/";
+				System.out.println(outputFilePath);
 			} catch (ClassFormatException | IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

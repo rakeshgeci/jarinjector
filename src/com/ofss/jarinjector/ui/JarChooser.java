@@ -20,6 +20,7 @@ import net.sf.vfsjfilechooser.utils.VFSUtils;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -48,6 +49,7 @@ public class JarChooser {
 	private JButton btnNewButton;
 	private SshConnector sshLogin;
 	private JarInjectorClassLoader classLoader;
+	private String tempLocation = " /tmp/temp/jarInjector";
 
 	/**
 	 * Launch the application.
@@ -182,9 +184,17 @@ public class JarChooser {
 		String path = fileNamePath.getText();
 		try {
 			sshLogin = new SshConnector(user, host, port, password);
+			String commands = "cp "+fileNamePath.getText()+" "+tempLocation;
+			sshLogin.executeCommand("rm -rf "+tempLocation+"/*");
+			sshLogin.executeCommand("mkdir -p "+tempLocation);
+			System.out.println(commands);
+			System.out.println(sshLogin.executeCommand(commands));
 			frame.setVisible(false);
 			classLoader = new JarInjectorClassLoader(sshLogin, path);
 		} catch (JSchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		

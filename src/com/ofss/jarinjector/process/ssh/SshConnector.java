@@ -57,6 +57,7 @@ public class SshConnector {
 	 */
 	public StringBuilder executeCommand(String command) throws IOException, JSchException {
 		StringBuilder outputBuffer = new StringBuilder();
+		channel = session.openChannel("exec");
 		if(channel!=null) {
 			((ChannelExec)channel).setCommand(command);
 		}
@@ -69,6 +70,7 @@ public class SshConnector {
            outputBuffer.append((char)readByte);
            readByte = commandOutput.read();
         }
+        channel.disconnect();
 		return outputBuffer;
 	}
 }
