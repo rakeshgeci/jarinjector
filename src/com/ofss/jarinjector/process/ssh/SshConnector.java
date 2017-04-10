@@ -1,8 +1,13 @@
 package com.ofss.jarinjector.process.ssh;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -10,6 +15,7 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 public class SshConnector {
 	private JSch jsch;
@@ -46,6 +52,53 @@ public class SshConnector {
 		session.setConfig("StrictHostKeyChecking", "no");
 		session.connect();
 		channel = session.openChannel("exec");
+	}
+	
+	
+	public void copyFile(File file, String destination) throws JSchException, SftpException, FileNotFoundException {
+		channel = session.openChannel("sftp");
+		channel.connect();
+		ChannelSftp channelSftp = (ChannelSftp)channel;
+		channelSftp.cd(destination);
+		channelSftp.put(new FileInputStream(file), file.getName());
+	}
+	
+	public void executeCommands(String... commands) throws JSchException, IOException, InterruptedException {
+		Channel channel=session.openChannel("shell");
+        OutputStream ops = channel.getOutputStream();
+        PrintStream ps = new PrintStream(ops, true);
+
+         channel.connect();
+         for(String cmd : commands)
+        	 ps.println(cmd); 
+          ps.close();
+
+         InputStream in=channel.getInputStream();
+         byte[] bt=new byte[1024];
+
+
+         while(true)
+         {
+
+         while(in.available()>0)
+         {
+         int i=in.read(bt, 0, 1024);
+         if(i<0)
+          break;
+            String str=new String(bt, 0, i);
+          //displays the output of the command executed.
+            System.out.print(str);
+
+
+         }
+         if(channel.isClosed())
+         {
+
+             break;
+        }
+         Thread.sleep(1000);
+         channel.disconnect(); 
+         }
 	}
 	
 	/**

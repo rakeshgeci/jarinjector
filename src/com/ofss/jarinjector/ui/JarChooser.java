@@ -5,10 +5,9 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 
+import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.FileSystemManager;
-import org.apache.commons.vfs.VFS;
 
 import com.jcraft.jsch.JSchException;
 import com.ofss.jarinjector.process.ssh.SshConnector;
@@ -30,7 +29,7 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
 public class JarChooser {
-
+	private FileName fileNameObj;
 	private JFrame frame;
 	private JTextField fileNamePath;
 	private String host;
@@ -49,7 +48,7 @@ public class JarChooser {
 	private JButton btnNewButton;
 	private SshConnector sshLogin;
 	private JarInjectorClassLoader classLoader;
-	private String tempLocation = " /tmp/temp/jarInjector";
+	private String tempLocation = "/tmp/temp/jarInjector";
 
 	/**
 	 * Launch the application.
@@ -86,6 +85,7 @@ public class JarChooser {
 		
 		btnNewButton = new JButton("Select Jar");
 		btnNewButton.addActionListener(new ActionListener() {
+
 			public void actionPerformed(ActionEvent arg0) {
 				
 				final VFSJFileChooser fileChooser = new VFSJFileChooser();
@@ -95,12 +95,12 @@ public class JarChooser {
 				fileChooser.setFileHidingEnabled(false);
 				fileChooser.setMultiSelectionEnabled(false);
 				File dir = new File("sftp://readonly:readonly@10.180.84.194:22/scratch");
-				fileChooser.setCurrentDirectory(null);
+				//fileChooser.setCurrentDirectory(null);
 				//fileChooser.setFileSelectionMode(SELECTION_MODE.FILES_ONLY);
 
 				// show the file dialog
 				int answer = fileChooser.showOpenDialog(frame);
-				if(answer == 0) {
+				if(answer== 0) {
 					FileObject selectedFile = fileChooser.getSelectedFile();
 					String fileNamePaths = VFSUtils.getFriendlyName(selectedFile.toString());
 					URL credentials = null;
@@ -113,8 +113,10 @@ public class JarChooser {
 						fileNamePath.setText(uri.getPath());
 						String[] unameNpassword = uri.getUserInfo().split(":");
 						userField.setText(unameNpassword[0]);
-						passwordField.setText(unameNpassword[1]);						
-					} catch (FileSystemException | URISyntaxException e) {
+						passwordField.setText(unameNpassword[1]);
+						fileNameObj = selectedFile.getName();
+						
+					} catch (URISyntaxException | FileSystemException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
@@ -187,14 +189,22 @@ public class JarChooser {
 			String commands = "cp "+fileNamePath.getText()+" "+tempLocation;
 			sshLogin.executeCommand("rm -rf "+tempLocation+"/*");
 			sshLogin.executeCommand("mkdir -p "+tempLocation);
+			String changeDir = "cd "+tempLocation;
+			System.out.println(changeDir);
 			System.out.println(commands);
 			System.out.println(sshLogin.executeCommand(commands));
+			sshLogin.executeCommand(changeDir);
+			sshLogin.executeCommands(changeDir,"jar xvf "+ fileNameObj.getBaseName(),"rm -rf "+fileNameObj.getBaseName());
+			System.out.println(sshLogin.executeCommand("pwd"));
 			frame.setVisible(false);
-			classLoader = new JarInjectorClassLoader(sshLogin, path);
+			classLoader = new JarInjectorClassLoader(sshLogin, fileNameObj.getBaseName());
 		} catch (JSchException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		

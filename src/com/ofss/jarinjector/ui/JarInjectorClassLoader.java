@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.SftpException;
 import com.ofss.jarinjector.process.ssh.SshConnector;
 
 import javax.swing.JFileChooser;
@@ -37,7 +38,7 @@ public class JarInjectorClassLoader {
 	private File selectedFile;
 	private String outputFilePath;
 	private static int flag = 0;
-
+	private String tempLocation = "/tmp/temp/jarInjector";
 	/**
 	 * Create the application.
 	 * @param fileName 
@@ -50,7 +51,7 @@ public class JarInjectorClassLoader {
 
 	public JarInjectorClassLoader(SshConnector sshLogin2, String fileName2) {
 		this.sshLogin = sshLogin2;
-		this.fileName = fileName;
+		this.fileName = fileName2;
 		initialize();
 		frame.setVisible(true);
 	}
@@ -95,6 +96,7 @@ public class JarInjectorClassLoader {
 		JButton btnDone = new JButton("Done");
 		btnDone.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				finalInject();
 			}
 		});
 		btnDone.setBounds(54, 185, 91, 23);
@@ -110,6 +112,23 @@ public class JarInjectorClassLoader {
 		frame.getContentPane().add(btnOpenPutty);
 	}
 
+	protected void finalInject() {
+		try {
+			sshLogin.executeCommands("cd "+tempLocation, "jar cvf "+fileName+" .");
+		} catch (JSchException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+
 	protected void openPutty() {
 		try {
 			Runtime.getRuntime().exec("C:\\Program Files (x86)\\PuTTY\\putty.exe");
@@ -123,7 +142,20 @@ public class JarInjectorClassLoader {
 
 	protected void performInjection() {
 		if(flag==0) {
-			copyJarToTemp();
+			try {
+				ClassParser cp = new ClassParser(selectedFile.getAbsolutePath());
+				JavaClass outputClass;
+				outputClass = cp.parse();
+				String packageName = outputClass.getPackageName();
+				outputFilePath = "/"+packageName.replaceAll("\\.", "/")+"/";
+				System.out.println(tempLocation+outputFilePath);
+				sshLogin.executeCommand("mkdir -p "+tempLocation+outputFilePath);
+				sshLogin.copyFile(new File(selectedFile.getAbsolutePath()), tempLocation+outputFilePath);
+			} catch (ClassFormatException | IOException | JSchException | SftpException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		
 	}
@@ -153,17 +185,19 @@ public class JarInjectorClassLoader {
 		    selectedFile = fileChooser.getSelectedFile();
 		    fileNamePath.setText(selectedFile.getAbsolutePath());
 		    inject.setEnabled(true);
-			try {
-				ClassParser cp = new ClassParser(selectedFile.getAbsolutePath());
-				JavaClass outputClass;
-				outputClass = cp.parse();
-				String packageName = outputClass.getPackageName();
-				outputFilePath = "/"+packageName.replaceAll("\\.", "/")+"/";
-				System.out.println(outputFilePath);
-			} catch (ClassFormatException | IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				ClassParser cp = new ClassParser(selectedFile.getAbsolutePath());
+//				JavaClass outputClass;
+//				outputClass = cp.parse();
+//				String packageName = outputClass.getPackageName();
+//				outputFilePath = "/"+packageName.replaceAll("\\.", "/")+"/";
+//				System.out.println(tempLocation+outputFilePath);
+//				sshLogin.executeCommand("mkdir -p "+tempLocation+outputFilePath);
+//				sshLogin.copyFile(new File(selectedFile.getAbsolutePath()), tempLocation+outputFilePath);
+//			} catch (ClassFormatException | IOException | JSchException | SftpException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 		
 	}

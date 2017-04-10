@@ -2,8 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="D:/libs/com.springsource.org.apache.commons.vfs-1.0.0.jar"/>
+	<classpathentry kind="lib" path="D:/libs/gson-2.2.4.jar"/>
 	<classpathentry kind="lib" path="D:/libs/jsch-0.1.54.jar"/>
-	<classpathentry kind="lib" path="D:/libs/VFSJFileChooser-0.0.2_JDK5.jar"/>
+	<classpathentry kind="lib" path="D:/libs/org-apache-commons-logging.jar"/>
 	<classpathentry kind="lib" path="D:/libs/commons-vfs-2.1/commons-vfs-2.1/commons-vfs2-2.1.jar"/>
 	<classpathentry kind="lib" path="D:/libs/commons-vfs-2.1/commons-vfs-2.1/commons-vfs2-2.1-javadoc.jar"/>
 	<classpathentry kind="lib" path="D:/libs/commons-vfs-2.1/commons-vfs-2.1/commons-vfs2-2.1-sources.jar"/>
@@ -12,12 +14,11 @@
 	<classpathentry kind="lib" path="D:/libs/commons-vfs-2.1/commons-vfs-2.1/commons-vfs2-examples-2.1.jar"/>
 	<classpathentry kind="lib" path="D:/libs/commons-vfs-2.1/commons-vfs-2.1/commons-vfs2-examples-2.1-javadoc.jar"/>
 	<classpathentry kind="lib" path="D:/libs/commons-vfs-2.1/commons-vfs-2.1/commons-vfs2-examples-2.1-sources.jar"/>
-	<classpathentry kind="lib" path="D:/libs/com.springsource.org.apache.commons.vfs-1.0.0.jar"/>
-	<classpathentry kind="lib" path="D:/libs/org-apache-commons-logging.jar"/>
 	<classpathentry kind="lib" path="D:/libs/bcel-6.0/bcel-6.0.jar"/>
 	<classpathentry kind="lib" path="D:/libs/bcel-6.0/bcel-6.0-javadoc.jar"/>
 	<classpathentry kind="lib" path="D:/libs/bcel-6.0/bcel-6.0-sources.jar"/>
 	<classpathentry kind="lib" path="D:/libs/bcel-6.0/bcel-6.0-tests.jar"/>
 	<classpathentry kind="lib" path="D:/libs/bcel-6.0/bcel-6.0-test-sources.jar"/>
+	<classpathentry kind="lib" path="D:/libs/VFSJFileChooser-0.0.2_JDK5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
